@@ -428,8 +428,8 @@ y5_prd_median<<-predict(lo,seq(10,150,5))
 
 df1=rbind(data.frame(x=seq(10,150,5),y=y_prd_median,group="median"),
           data.frame(x=seq(10,150,5),y=y_prd_none,group="none"),
-          data.frame(x=seq(10,150,5),y=y_prd_huber-0.02,group="huber"),
-          data.frame(x=seq(10,150,5),y=y_prd_adhuber+0.03,group="adhuber"))
+          data.frame(x=seq(10,150,5),y=y_prd_huber,group="huber"),
+          data.frame(x=seq(10,150,5),y=y_prd_adhuber,group="adhuber"))
 p1<-ggplot(df1,aes(x,y,group)) +
   geom_line(aes(color=group, linetype=group),size=1)+
   #geom_point(aes(color=group, shape=group))+
@@ -439,7 +439,7 @@ p1<-ggplot(df1,aes(x,y,group)) +
 
 df2=rbind(data.frame(x=seq(10,150,5),y=y2_prd_median,group="median"),
           data.frame(x=seq(10,150,5),y=y2_prd_none,group="none"),
-          data.frame(x=seq(10,150,5),y=y2_prd_huber+0.05,group="huber"),
+          data.frame(x=seq(10,150,5),y=y2_prd_huber,group="huber"),
           data.frame(x=seq(10,150,5),y=y2_prd_adhuber,group="adhuber"))
 p2<-ggplot(df2,aes(x,y,group)) +
   geom_line(aes(color=group, linetype=group), size=1)+
@@ -450,7 +450,7 @@ p2<-ggplot(df2,aes(x,y,group)) +
 
 df3=rbind(data.frame(x=seq(10,150,5),y=y3_prd_median,group="median"),
           data.frame(x=seq(10,150,5),y=y3_prd_none,group="none"),
-          data.frame(x=seq(10,150,5),y=y3_prd_huber-0.04,group="huber"),
+          data.frame(x=seq(10,150,5),y=y3_prd_huber,group="huber"),
           data.frame(x=seq(10,150,5),y=y3_prd_adhuber,group="adhuber"))
 p3<-ggplot(df3,aes(x,y,group)) +
   geom_line(aes(color=group,linetype=group), size=1)+
@@ -461,7 +461,7 @@ p3<-ggplot(df3,aes(x,y,group)) +
 
 df4=rbind(data.frame(x=seq(10,150,5),y=y4_prd_median,group="median"),
           data.frame(x=seq(10,150,5),y=y4_prd_none,group="none"),
-          data.frame(x=seq(10,150,5),y=y4_prd_huber+1,group="huber"),
+          data.frame(x=seq(10,150,5),y=y4_prd_huber,group="huber"),
           data.frame(x=seq(10,150,5),y=y4_prd_adhuber,group="adhuber"))
 p4<-ggplot(df4,aes(x,y,group)) +
   geom_line(aes(color=group,linetype=group), size=1)+
@@ -472,8 +472,8 @@ p4<-ggplot(df4,aes(x,y,group)) +
 
 df5=rbind(data.frame(x=seq(10,150,5),y=y5_prd_median,group="median"),
           data.frame(x=seq(10,150,5),y=y5_prd_none,group="none"),
-          data.frame(x=seq(10,150,5),y=y5_prd_huber+0.5,group="huber"),
-          data.frame(x=seq(10,150,5),y=y5_prd_adhuber-0.2,group="adhuber"))
+          data.frame(x=seq(10,150,5),y=y5_prd_huber,group="huber"),
+          data.frame(x=seq(10,150,5),y=y5_prd_adhuber,group="adhuber"))
 p5<-ggplot(df5,aes(x,y,group)) +
   geom_line(aes(color=group,linetype=group), size=1)+
   #geom_point(aes(color=group, shape=group))+

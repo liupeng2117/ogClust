@@ -383,7 +383,7 @@ y5_prd_scluster<<-predict(lo,seq(10,150,5))
 #id_pmbc<-order(x_pmbc)
 
 df1=rbind(data.frame(x=seq(10,150,5),y=y_prd_ogclust,group="ogClust"),
-          data.frame(x=seq(10,150,5),y=y_prd_scluster-0.1,group="SC"),
+          data.frame(x=seq(10,150,5),y=y_prd_scluster,group="SC"),
           data.frame(x=seq(10,150,5),y=y_prd_skm,group="SKM"),
           data.frame(x=seq(10,150,5),y=y_prd_pmbc,group="PMBC"))
 p1<-ggplot(df1,aes(x,y,group)) +
