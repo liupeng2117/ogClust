@@ -1,0 +1,398 @@
+\documentclass[a4paper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\usepackage[utf8]{inputenc} % @SET ENCODING@
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge Package `ogClust'}}
+\par\bigskip{\large \today}
+\end{center}
+\begin{description}
+\raggedright{}
+\inputencoding{utf8}
+\item[Title]\AsIs{Outcome guided clustering}
+\item[Version]\AsIs{0.0.0.9000}
+\item[Description]\AsIs{Outcome-guided clustering of high dimensional omic data(e.g. gene expression) to
+identify the outcome assoicated subgroups toward precision medicine. Outcome could be
+either continous or survival.}
+\item[License]\AsIs{MIT + file LICENSE}
+\item[Encoding]\AsIs{UTF-8}
+\item[LazyData]\AsIs{true}
+\item[RoxygenNote]\AsIs{7.1.0}
+\item[RdMacros]\AsIs{Rdpack}
+\item[Depends]\AsIs{R (>= 2.10)}
+\item[Imports]\AsIs{glmnet (>= 2.0.18),
+tfHuber (>= 1.0),
+survival (>= 3.1.12),
+stats,
+Rdpack}
+\item[Suggests]\AsIs{testthat (>= 2.1.0),
+knitr,
+rmarkdown}
+\item[NeedsCompilation]\AsIs{no}
+\item[Author]\AsIs{Peng Liu [aut, cre] }\email{pel67@pitt.edu}\AsIs{}
+\item[Maintainer]\AsIs{Peng Liu }\email{pel67@pitt.edu}\AsIs{}
+\item[VignetteBuilder]\AsIs{knitr}
+\end{description}
+\Rdcontents{\R{} topics documented:}
+\inputencoding{utf8}
+\HeaderA{fit.ogClust}{Title Fit ogClust mixture model}{fit.ogClust}
+%
+\begin{Description}\relax
+Title Fit ogClust mixture model
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+fit.ogClust(
+  n,
+  K,
+  np,
+  NG,
+  lambda,
+  alpha,
+  G,
+  Y,
+  X,
+  theta_int,
+  robust = "none",
+  tau = 1.345
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{n}] the number of samples
+
+\item[\code{K}] the number of subgroups
+
+\item[\code{np}] the number of
+
+\item[\code{NG}] the number of genes
+
+\item[\code{lambda}] the regularization tuning parameter for sparsity
+
+\item[\code{alpha}] the L2 regularization tuning parameter
+
+\item[\code{G}] the input gene expression matrix
+
+\item[\code{Y}] the input vector of outcome
+
+\item[\code{X}] the input vector of covariates
+
+\item[\code{theta\_int}] initial values of parameters
+
+\item[\code{robust}] choose the type of robustness
+
+\item[\code{tau}] set the cutoff for huber loss if robust is huberk
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+The ogClust is a unified latent generative model to perform clustering constructed
+from omics data `G` with the guidance of outcome `Y`, and with covariate `X` to account for
+the variability that is not related to subgrouping. A modified EM algorithm is applied for
+numeric computation such that the liklihood is maximized. A posterior probability is obtain
+for each subject belonging to each cluster.
+
+ogClust method performs feature selection, latent subtype characterization and outcome prediction simultaneously.
+We use either LASSO \$R(\bsl{}gamma)=\bsl{}sum\_j=1\textasciicircum{}q \bsl{}sum\_k=1\textasciicircum{}K\bsl{}left|\bsl{}gamma\_j k\bsl{}right|\$ or LASSO penalty plus L2 regularization
+Parameter `lambda` controls the penalty, and `alpha` tunes the L2 penalty. To account for possible outliers or violation of mixture Gaussian assumption, we incorporate robust
+estimation using adaptive Huber \Cite{sun2019adaptive} or median-truncated loss function \Cite{chi2019median}.
+\end{Details}
+%
+\begin{Value}
+An objects of class `ogClust`
+\begin{itemize}
+
+\item{} 'res'a vector of parameter estimates,likelihood `ll`, `R2`, `AIC`, `BIC` and tuning parameter `lambda`
+\item{} 'prob'predicted probability for belonging to each subgroup
+\item{} 'Y\_prd'predicted outcome
+\item{} 'grp\_assign'prediced group assignement
+
+\end{itemize}
+
+\end{Value}
+%
+\begin{References}\relax
+
+\bsl{}insertRefsun2019adaptiveogClust
+\bsl{}insertRefchi2019medianogClust
+
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+  data(lung) #load lung dataset
+
+  # extract gene expression G, covariate X, survival time Y
+  G=lung$G
+  X=lung$X
+  Y=lung$Y
+
+  # number of subjects
+  n=nrow(G)
+  # number of genes
+  NG=ncol(G)
+  # number of covariates
+  np=ncol(X)
+  # number of clusters
+  K=3
+  # tuning parameter
+  lambda=0.13
+
+  # set initial values
+  beta_int = runif(np, 0, 3)
+  gamma_int = runif((K - 1) * (NG + 1), 0, 1)
+  beta0_int = runif(K, 0, 3)
+  sigma2_int = runif(1, 1, 3)
+  theta_int = c(beta_int, gamma_int, beta0_int, sigma2_int)
+
+  # fit ogClust, robust is FALSE
+  fit.res<-fit.ogClust(n=n, K=K, np=np, NG=NG, lambda=lambda,
+                    alpha=0.5, G=G, Y=Y, X=X,theta_int=theta_int)
+  # fit ogClust, robust method is median-truncation
+  fit.res2<-fit.ogClust(n=n, K=K, np=np, NG=NG, lambda=lambda,
+                     alpha=0.5, G=G, Y=Y, X=X,theta_int=theta_int,robust = 'median')
+  # fit ogClust, robust method is Huber
+  fit.res3<-fit.ogClust(n=n, K=K, np=np, NG=NG, lambda=lambda,
+                     alpha=0.5, G=G, Y=Y, X=X,theta_int=theta_int, robust ='huber',tau=4.345)
+  # fit ogClust, robust method is adaptive Huber
+  fit.res4<-fit.ogClust(n=n, K=K, np=np, NG=NG, lambda=lambda,
+                     alpha=0.5, G=G, Y=Y, X=X,theta_int=theta_int, robust='hubertf')
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{fit.ogClust.surv}{Title Fit ogClust mixture model}{fit.ogClust.surv}
+%
+\begin{Description}\relax
+Title Fit ogClust mixture model
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+fit.ogClust.surv(
+  n,
+  K,
+  np,
+  NG,
+  lambda,
+  alpha,
+  G,
+  Y,
+  X,
+  delta,
+  theta_int,
+  dist = "loglogistic"
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{n}] the number of samples
+
+\item[\code{K}] the number of subgroups
+
+\item[\code{np}] the number of prognostic covariates
+
+\item[\code{NG}] the number of genes
+
+\item[\code{lambda}] the penalty parameter for sparsity of genes
+
+\item[\code{alpha}] the tuning parameter for the L2 loss of the penalty
+
+\item[\code{G}] a matrix of gene expression, with subjects are rows and genes are columns
+
+\item[\code{Y}] a vector of survival time
+
+\item[\code{X}] a matrix of covariates, with subjects are rows and prognostic covariates are columns
+
+\item[\code{delta}] a binary indicator of censoring, 0 means censored and 1 means event observed.
+
+\item[\code{theta\_int}] initial values of parameters
+
+\item[\code{dist}] distribution of the survival time, defualt is loglogistic
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+to be filled later
+\end{Details}
+%
+\begin{Value}
+An object with class `ogClust`
+\begin{itemize}
+
+\item{} 'res'a vector of parameter estimates,likelihood `ll`, `R2`, `AIC`, `BIC` and tuning parameter `lambda`
+\item{} 'prob'predicted probability for belonging to each subgroup
+\item{} 'Y\_prd'predicted outcome
+\item{} 'grp\_assign'prediced group assignement
+
+\end{itemize}
+
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+  data('surv_dt') #load simulated survial data
+
+  # extract gene expression G, covariate X, survival time Y
+  # and censoring indicator delta
+  G=surv_dt[,3:1002]
+  X=surv_dt[,1:2]
+  Y=surv_dt$time
+  delta=surv_dt$event
+
+  # number of subjects
+  n=nrow(G)
+  # number of genes
+  NG=ncol(G)
+  # number of covariates
+  np=ncol(X)
+  # number of clusters
+  K=3
+  # tuning parameter
+  lambda=0.13
+
+  # set initial values
+  beta_int = runif(np, 0, 3)
+  gamma_int = runif((K - 1) * (NG + 1), 0, 1)
+  beta0_int = runif(K, 0, 3)
+  sigma2_int = runif(1, 1, 3)
+  theta_int = c(beta_int, gamma_int, beta0_int, sigma2_int)
+
+  # fit ogClust
+  fit.res<-fit.ogClust.surv(n=n, K=K, np=np, NG=NG, lambda=lambda,
+                         alpha=0.5, G=G, Y=Y, X=X, delta, theta_int=theta_int)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{lung}{LGRC lung disease data}{lung}
+\keyword{datasets}{lung}
+%
+\begin{Description}\relax
+Gene expression data are collected from Gene Expression Omnibus (GEO) GSE47460
+and clinical information obtained from Lung Genomics Research Consortium
+(https://ltrcpublic.com/). The data has n=315 pateints diagnosed by
+two most representative lung disease subtypes: chronic obstructive pulmonary disease (COPD)
+and interstitial lung disease (ILD), expression of 2000 genes, and values of
+three prognostic covariates.
+The outcome is FEV1
+volume of air a person can exhale during the first second of
+forced expiration) normalized by the predicted FEV1 with healthy lung.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(lung)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+a list containing gene expression matrix `G`, covariate matrix `X` and outcome `Y`
+\end{Format}
+%
+\begin{Source}\relax
+Lung Genomics Research Consortium (https://ltrcpublic.com/)
+Gene Expression Omnibus (https://www.ncbi.nlm.nih.gov/geo/)
+\end{Source}
+%
+\begin{Examples}
+\begin{ExampleCode}
+  data(lung) #load lung dataset
+
+  # extract gene expression G, covariate X, survival time Y
+  G=lung$G
+  X=lung$X
+  Y=lung$Y
+
+  # number of subjects
+  n=nrow(G)
+  # number of genes
+  NG=ncol(G)
+  # number of covariates
+  np=ncol(X)
+  # number of clusters
+  K=3
+  # tuning parameter
+  lambda=0.13
+
+  # set initial values
+  beta_int = runif(np, 0, 3)
+  gamma_int = runif((K - 1) * (NG + 1), 0, 1)
+  beta0_int = runif(K, 0, 3)
+  sigma2_int = runif(1, 1, 3)
+  theta_int = c(beta_int, gamma_int, beta0_int, sigma2_int)
+
+  # fit ogClust, robust is FALSE
+  fit.res<-fit.ogClust(n=n, K=K, np=np, NG=NG, lambda=lambda,
+                    alpha=0.5, G=G, Y=Y, X=X,theta_int=theta_int)
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{surv\_dt}{Simulated survival data}{surv.Rul.dt}
+\keyword{datasets}{surv\_dt}
+%
+\begin{Description}\relax
+An simulated survival data, with expression of 1000
+genes, two prognostic covariates, survival time,
+plus an indicator for censoring.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(surv_dt)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+a list containing gene expression matrix `G`,
+covariate matrix `X` and survival time `Y` and a binary
+indicator `delta` for censoring.
+\end{Format}
+%
+\begin{Author}\relax
+Peng Liu, 2020-06-21
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+  data('surv_dt') #load simulated survial data
+
+  # extract gene expression G, covariate X, survival time Y
+  # and censoring indicator delta
+  G=surv_dt[,3:1002]
+  X=surv_dt[,1:2]
+  Y=surv_dt$time
+  delta=surv_dt$event
+
+  # number of subjects
+  n=nrow(G)
+  # number of genes
+  NG=ncol(G)
+  # number of covariates
+  np=ncol(X)
+  # number of clusters
+  K=3
+  # tuning parameter
+  lambda=0.13
+
+  # set initial values
+  beta_int = runif(np, 0, 3)
+  gamma_int = runif((K - 1) * (NG + 1), 0, 1)
+  beta0_int = runif(K, 0, 3)
+  sigma2_int = runif(1, 1, 3)
+  theta_int = c(beta_int, gamma_int, beta0_int, sigma2_int)
+
+  # fit ogClust
+  fit.res<-fit.ogClust.surv(n=n, K=K, np=np, NG=NG, lambda=lambda,
+                         alpha=0.5, G=G, Y=Y, X=X, delta, theta_int=theta_int)
+\end{ExampleCode}
+\end{Examples}
+\printindex{}
+\end{document}

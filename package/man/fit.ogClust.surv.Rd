@@ -20,44 +20,56 @@ fit.ogClust.surv(
 )
 }
 \arguments{
-\item{n}{the number of samples}
+\item{n}{an integer defines number of samples}
 
-\item{K}{the number of subgroups}
+\item{K}{an integer defines the number of subgroups}
 
-\item{np}{the number of prognostic covariates}
+\item{np}{an integer defines the number of covariates}
 
-\item{NG}{the number of genes}
+\item{NG}{an integer defines the number of features of omics data}
 
-\item{lambda}{the penalty parameter for sparsity of genes}
+\item{lambda}{the regularization tuning parameter for sparsity}
 
-\item{alpha}{the tuning parameter for the L2 loss of the penalty}
+\item{alpha}{the L2 regularization tuning parameter}
 
-\item{G}{a matrix of gene expression, with subjects are rows and genes are columns}
+\item{G}{the matrix for omics data. The rows are samples and columns are features.}
 
-\item{Y}{a vector of survival time}
+\item{Y}{the vector of time variable}
 
-\item{X}{a matrix of covariates, with subjects are rows and prognostic covariates are columns}
+\item{X}{the vector of covariates}
 
-\item{delta}{a binary indicator of censoring, 0 means censored and 1 means event observed.}
+\item{delta}{a binary indicator of censoring for time-to-event outcome. 0 means censored and 1 means event observed.}
 
-\item{theta_int}{initial values of parameters}
+\item{theta_int}{a vector of initial values for parameters to estimate}
 
-\item{dist}{distribution of the survival time, defualt is loglogistic}
+\item{dist}{distribution of the survival time, defualt is \code{"loglogistic"}. The choices are \code{"weibull"},
+\code{"exponential"}, \code{"gaussian"}, \code{"logistic"},\code{"lognormal"} and \code{"loglogistic"}.}
 }
 \value{
-An object with class `ogClust`
+An object with class \code{"ogClust"}
 \itemize{
- \item{'res'}{a vector of parameter estimates,likelihood `ll`, `R2`, `AIC`, `BIC` and tuning parameter `lambda`}
- \item{'prob'}{predicted probability for belonging to each subgroup}
- \item{'Y_prd'}{predicted outcome}
- \item{'grp_assign'}{prediced group assignement}
+ \item{\code{res}}{ a vector of parameter estimates,likelihood \code{"ll"}, \code{"R2"}, \code{"AIC"}, \code{"BIC"} and tuning parameter \code{lambda}}
+ \item{\code{prob}}{ predicted probability for belonging to each subgroup}
+ \item{\code{Y_prd}}{ predicted outcome}
+ \item{\code{grp_assign}}{ prediced group assignement}
 }
 }
 \description{
 Title Fit ogClust mixture model
 }
 \details{
-to be filled later
+The ogClust is a unified latent generative model to perform clustering constructed
+from omics data \code{G} with the guidance of outcome \code{Y}, and with covariate \code{X} to account for
+the variability that is not related to subgrouping. A modified EM algorithm is applied for
+numeric computation such that the liklihood is maximized. A posterior probability is obtain
+for each subject belonging to each cluster.
+
+ogClust method performs feature selection, latent subtype characterization and outcome prediction simultaneously.
+We use either LASSO penalty or LASSO penalty plus L2 regularization( \eqn{lambda*(L1 + alpha*L2)})
+Parameter \code{lambda} is the penalty tuning parameter, and \code{alpha} tunes the L2 regularization.
+Time variable \code{Y} and censoring indicator \code{delta} together defines a single time-to-event outcome.
+We use accelerated-failure time(AFT) model to model time-to-event outcome, \code{dist} defines
+the distribution of survival time.
 }
 \examples{
   data('surv_dt') #load simulated survial data

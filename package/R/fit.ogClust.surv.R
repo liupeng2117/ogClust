@@ -1,26 +1,38 @@
 #' Title Fit ogClust mixture model
 #'
-#' @param n the number of samples
-#' @param K the number of subgroups
-#' @param np the number of prognostic covariates
-#' @param NG the number of genes
-#' @param lambda the penalty parameter for sparsity of genes
-#' @param alpha the tuning parameter for the L2 loss of the penalty
-#' @param G a matrix of gene expression, with subjects are rows and genes are columns
-#' @param X a matrix of covariates, with subjects are rows and prognostic covariates are columns
-#' @param Y a vector of survival time
-#' @param delta a binary indicator of censoring, 0 means censored and 1 means event observed.
-#' @param theta_int initial values of parameters
-#' @param dist distribution of the survival time, defualt is loglogistic
+#' @param n an integer defines number of samples
+#' @param K an integer defines the number of subgroups
+#' @param np an integer defines the number of covariates
+#' @param NG an integer defines the number of features of omics data
+#' @param lambda the regularization tuning parameter for sparsity
+#' @param alpha the L2 regularization tuning parameter
+#' @param G the matrix for omics data. The rows are samples and columns are features.
+#' @param X the vector of covariates
+#' @param Y the vector of time variable
+#' @param delta a binary indicator of censoring for time-to-event outcome. 0 means censored and 1 means event observed.
+#' @param theta_int a vector of initial values for parameters to estimate
+#' @param dist distribution of the survival time, defualt is \code{"loglogistic"}. The choices are \code{"weibull"},
+#' \code{"exponential"}, \code{"gaussian"}, \code{"logistic"},\code{"lognormal"} and \code{"loglogistic"}.
 #'
-#' @details to be filled later
+#' @details The ogClust is a unified latent generative model to perform clustering constructed
+#' from omics data \code{G} with the guidance of outcome \code{Y}, and with covariate \code{X} to account for
+#' the variability that is not related to subgrouping. A modified EM algorithm is applied for
+#' numeric computation such that the liklihood is maximized. A posterior probability is obtain
+#' for each subject belonging to each cluster.
 #'
-#' @return An object with class `ogClust`
+#' ogClust method performs feature selection, latent subtype characterization and outcome prediction simultaneously.
+#' We use either LASSO penalty or LASSO penalty plus L2 regularization( \eqn{lambda*(L1 + alpha*L2)})
+#' Parameter \code{lambda} is the penalty tuning parameter, and \code{alpha} tunes the L2 regularization.
+#' Time variable \code{Y} and censoring indicator \code{delta} together defines a single time-to-event outcome.
+#' We use accelerated-failure time(AFT) model to model time-to-event outcome, \code{dist} defines
+#' the distribution of survival time.
+#'
+#' @return An object with class \code{"ogClust"}
 #' \itemize{
-#'  \item{'res'}{a vector of parameter estimates,likelihood `ll`, `R2`, `AIC`, `BIC` and tuning parameter `lambda`}
-#'  \item{'prob'}{predicted probability for belonging to each subgroup}
-#'  \item{'Y_prd'}{predicted outcome}
-#'  \item{'grp_assign'}{prediced group assignement}
+#'  \item{\code{res}}{ a vector of parameter estimates,likelihood \code{"ll"}, \code{"R2"}, \code{"AIC"}, \code{"BIC"} and tuning parameter \code{lambda}}
+#'  \item{\code{prob}}{ predicted probability for belonging to each subgroup}
+#'  \item{\code{Y_prd}}{ predicted outcome}
+#'  \item{\code{grp_assign}}{ prediced group assignement}
 #' }
 #' @export fit.ogClust.surv
 #' @importFrom glmnet glmnet
@@ -58,18 +70,18 @@
 #'   fit.res<-fit.ogClust.surv(n=n, K=K, np=np, NG=NG, lambda=lambda,
 #'                          alpha=0.5, G=G, Y=Y, X=X, delta, theta_int=theta_int)
 fit.ogClust.surv <- function(n, K, np, NG, lambda, alpha, G, Y, X, delta, theta_int, dist = "loglogistic") {
-    if (class(G) != "matrix") 
+    if (class(G) != "matrix")
         G = as.matrix(cbind(1, G))
-    if (class(X) != "matrix") 
+    if (class(X) != "matrix")
         X = as.matrix(X)
     theta_est = EM.surv(theta_int, lambda = lambda, n = n, G = G, Y = Y, X = X, delta = delta, np = np, K = K, NG = NG, alpha = alpha, dist = dist)$theta
-    
+
     # estimated parameters
     beta_est = theta_est[1:np]
     gamma_est = theta_est[(np + 1):((K - 1) * (NG + 1) + np)]
     beta0_est = theta_est[((K - 1) * (NG + 1) + np + 1):((K - 1) * (NG + 1) + np + K)]
     sigma2_est = theta_est[((K - 1) * (NG + 1) + np + K + 1)]
-    
+
     gamma_est_matrix = matrix(gamma_est, ncol = K - 1, byrow = T)
     gamma_est_matrix = cbind(gamma_est_matrix, 0)
     pai_est = sapply(1:K, function(k) exp(G %*% gamma_est_matrix[, k, drop = F])/rowSums(exp(G %*% gamma_est_matrix)))
@@ -77,19 +89,19 @@ fit.ogClust.surv <- function(n, K, np, NG, lambda, alpha, G, Y, X, delta, theta_
     f_est = t(apply(f_est, 1, function(x) x/sum(x)))
     idx = which.max(beta0_est)
     test = apply(f_est, 1, sum)
-    
+
     f_est[which(test < 10^-3 | is.na(test)), idx] = 1
     f_est[is.na(f_est)] = 0
-    
+
     (ll = sum(log(diag(pai_est %*% t(f_est)))))
     # calculate the expected value of Y and R2
     Y_prd = apply(sapply(1:K, function(x) pai_est[, x] * (beta0_est[x] + X %*% beta_est)), 1, sum)
     R2 = 1 - sum((Y - Y_prd)^2)/sum((Y - mean(Y))^2)
-    
+
     # Calculate AIC BIC
     AIC = 2 * sum(theta_est != 0) - 2 * ll
     BIC = log(n) * sum(theta_est != 0) - 2 * ll
-    
+
     # prosterior prob
     w_est = sapply(1:K, function(k) (pai_est[, k] * f_est[, k])/diag(pai_est %*% t(f_est)))
     cl.assign <- apply(w_est, 1, which.max)
@@ -105,27 +117,27 @@ EM.surv <- function(theta, lambda, n, G, Y, X, delta, np, K, NG, alpha = 0.5, di
     repeat {
         beta_old = theta[1:np]
         gamma_old = theta[(1 + np):((K - 1) * (NG + 1) + np)]
-        
+
         miu_old = theta[((K - 1) * (NG + 1) + np + 1):((K - 1) * (NG + 1) + np + K)]
-        
+
         sigma2_old = theta[((K - 1) * (NG + 1) + np + K + 1):length(theta)]
-        
-        
+
+
         # ==E-STEP==#
         gamma_old_matrix = matrix(gamma_old, ncol = K - 1, byrow = T)
         gamma_old_matrix = cbind(gamma_old_matrix, 0)
         pai_old = sapply(1:K, function(k) exp(G %*% gamma_old_matrix[, k, drop = F])/rowSums(exp(G %*% gamma_old_matrix)))
-        
+
         f_old = sapply(1:K, function(x) f_calc(Y1 = Y, X1 = X, beta = beta_old, mu = miu_old[x], sigma2 = sigma2_old, delta = delta))
         f_old = t(apply(f_old, 1, function(x) x/sum(x)))
         idx = which.max(miu_old)
         test = apply(f_old, 1, sum)
-        
+
         f_old[which(test < 10^-3 | is.na(test)), idx] = 1
         f_old[is.na(f_old)] = 0
         # calculate the expected value of Z
         w_old = sapply(1:K, function(k) (pai_old[, k] * f_old[, k])/diag(pai_old %*% t(f_old)))
-        
+
         # ==M-STEP==#
         gamma_new_matrix = tryCatch({
             fit <- glmnet::glmnet(x = G[, -1], y = w_old, lambda = lambda, family = "multinomial", alpha = alpha, type.multinomial = "grouped")
@@ -134,7 +146,7 @@ EM.surv <- function(theta, lambda, n, G, Y, X, delta, np, K, NG, alpha = 0.5, di
         }, error = function(e) {
             return(gamma_old_matrix)
         })
-        
+
         if (is.null(colnames(X))) {
             colnames(X) = paste0("X", 1:np)
         }
@@ -149,13 +161,13 @@ EM.surv <- function(theta, lambda, n, G, Y, X, delta, np, K, NG, alpha = 0.5, di
             weights = c(weights, w_old[, k])
         }
         weights[which(weights == 0)] = 10^-3
-        
-        fit = survival::survreg(eval(parse(text = paste("Surv(Y,delta)~-1", paste(colnames(X), collapse = " + "), paste(paste0("mu", 1:K), collapse = " + "), 
+
+        fit = survival::survreg(eval(parse(text = paste("Surv(Y,delta)~-1", paste(colnames(X), collapse = " + "), paste(paste0("mu", 1:K), collapse = " + "),
             sep = " + "))), weights = weights, data = dt2, dist = dist, robust = TRUE)
         miu_new = fit$coefficients[(np + 1):(np + K)]
         sigma2_new = fit$scale
         beta_new = fit$coefficients[1:np]
-        
+
         theta_new = c(beta_new, as.numeric(t(gamma_new_matrix[, -K])), miu_new, sigma2_new)
         dis = sqrt(sum((theta_new - theta)^2, na.rm = T))
         theta = theta_new

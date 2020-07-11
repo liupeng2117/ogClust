@@ -20,44 +20,62 @@ fit.ogClust(
 )
 }
 \arguments{
-\item{n}{the number of samples}
+\item{n}{an integer defines number of samples}
 
-\item{K}{the number of subgroups}
+\item{K}{an integer defines the number of subgroups}
 
-\item{np}{the number of}
+\item{np}{an integer defines the number of covariates}
 
-\item{NG}{the number of genes}
+\item{NG}{an integer defines the number of features of omics data}
 
-\item{lambda}{the penalty parameter for sparsity}
+\item{lambda}{the regularization tuning parameter for sparsity}
 
-\item{alpha}{the tuning parameter for elastic net}
+\item{alpha}{the L2 regularization tuning parameter}
 
-\item{G}{the input gene expression matrix}
+\item{G}{the matrix for omics data. The rows are samples and columns are features.}
 
-\item{Y}{the input vector of outcome}
+\item{Y}{the vector of a single outcome}
 
-\item{X}{the input vector of covariates}
+\item{X}{the vector of covariates}
 
 \item{theta_int}{initial values of parameters}
 
-\item{robust}{choose the type of robustness}
+\item{robust}{the robust method to be used in fitting the model.
+The default \code{"none"} do not use any robust estimation method.
+\code{robust = "huber"} uses Huber loss with fixed cutoff \code{tau}.
+\code{robust = "hubertf"} uses adaptive Huber loss, and \code{"median"} uses median-truncated
+loss  in model fitting.}
 
-\item{tau}{set the cutoff for huber loss if robust is huberk}
+\item{tau}{a single \code{numeric} value. Defines the boundary where the loss function transit
+from quadratic to linear if argument \code{robust = "huber"}. Defualt is \code{1.345}.}
 }
 \value{
-An objects of class `ogClust`
+An object with class \code{"ogClust"}
 \itemize{
- \item{'res'}{a vector of parameter estimates,likelihood `ll`, `R2`, `AIC`, `BIC` and tuning parameter `lambda`}
- \item{'prob'}{predicted probability for belonging to each subgroup}
- \item{'Y_prd'}{predicted outcome}
- \item{'grp_assign'}{prediced group assignement}
+ \item{\code{res}}{ a vector of parameter estimates,likelihood \code{"ll"}, \code{"R2"}, \code{"AIC"}, \code{"BIC"} and tuning parameter \code{lambda}}
+ \item{\code{prob}}{ predicted probability for belonging to each subgroup}
+ \item{\code{Y_prd}}{ predicted outcome}
+ \item{\code{grp_assign}}{ prediced group assignement}
 }
 }
 \description{
 Title Fit ogClust mixture model
 }
 \details{
-to be filled later
+The ogClust is a unified latent generative model to perform clustering constructed
+from omics data \code{G} with the guidance of outcome \code{Y}, and with covariate \code{X} to account for
+the variability that is not related to subgrouping. A modified EM algorithm is applied for
+numeric computation such that the liklihood is maximized. A posterior probability is obtain
+for each subject belonging to each cluster.
+
+ogClust method performs feature selection, latent subtype characterization and outcome prediction simultaneously.
+We use either LASSO penalty or LASSO penalty plus L2 regularization( \eqn{lambda*(L1 + alpha*L2)})
+Parameter \code{lambda} is the penalty tuning parameter, and \code{alpha} tunes the L2 regularization. To account for possible
+outliers or violation of mixture Gaussian assumption, we incorporate robust
+estimation using Huber loss (Huber, 2004), adaptive Huber (Wang et al., 2020) or median-truncated loss function (Chi et al., 2019).
+Use argument \code{robust} to select the robust estimation method to be used in model fitting. If \code{robust = "huber"},
+we need to set another parameter \code{tau} controlling the boundary of linear and quadratic loss. The choice of best \code{tau}
+depends on data.
 }
 \examples{
   data(lung) #load lung dataset
@@ -97,4 +115,17 @@ to be filled later
   # fit ogClust, robust method is adaptive Huber
   fit.res4<-fit.ogClust(n=n, K=K, np=np, NG=NG, lambda=lambda,
                      alpha=0.5, G=G, Y=Y, X=X,theta_int=theta_int, robust='hubertf')
+}
+\references{
+Huber, Peter J (2004)
+\emph{Robust statistics Vol. 523. John Wiley & Sons, 2004.}\cr
+
+Wang, Lili and Zheng, Chao and Zhou, Wen and Zhou, Wen-Xin (2020)
+\emph{A new principle for tuning-free Huber regression, to appear, Statistic Sinica}\cr
+\url{http://www.math.ucsd.edu/~wez243/tfHuber.pdf}\cr
+
+Chi, Yuejie and Li, Yuanxin and Zhang, Huishuai and Liang, Yingbin (2019)
+\emph{Median-Truncated Gradient Descent: A Robust and Scalable Nonconvex Approach for Signal Estimation}
+\emph{In Compressed Sensing and Its Applications,pages 237-261. Springer.}
+\url{https://link.springer.com/chapter/10.1007/978-3-319-73074-5_8}
 }
