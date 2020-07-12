@@ -1,0 +1,16 @@
+citHeader("To cite ogClust in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "Outcome-Guided Disease Subtyping for High-Dimensional Omics"",
+  author   = ,
+  journal  = "JASA Application & Case Studies",
+  year     = "2020",
+  volume   = ,
+  number   = ,
+  pages    = ,
+  url      = ,
+  textVersion = paste(
+
+  )
+)
