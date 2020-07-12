@@ -11,6 +11,7 @@ Description: Outcome-guided clustering of high dimensional omic data(e.g. gene e
         either continous or survival. 
 License: MIT + file LICENSE
 Encoding: UTF-8
+URL: https://github.com/liupeng2117/OGClust/package
 LazyData: true
 RoxygenNote: 7.1.0
 Depends:
