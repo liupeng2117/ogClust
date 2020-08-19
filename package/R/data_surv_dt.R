@@ -1,6 +1,6 @@
 #' Simulated survival data
 #'
-#' An simulated survival data, with expression of 1000
+#' A simulated survival data, with expression of 1000
 #' genes, two prognostic covariates, survival time,
 #' plus an indicator for censoring.
 #'
