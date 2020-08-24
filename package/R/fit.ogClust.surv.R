@@ -70,10 +70,9 @@
 #'   fit.res<-fit.ogClust.surv(n=n, K=K, np=np, NG=NG, lambda=lambda,
 #'                          alpha=0.5, G=G, Y=Y, X=X, delta, theta_int=theta_int)
 fit.ogClust.surv <- function(n, K, np, NG, lambda, alpha, G, Y, X, delta, theta_int, dist = "loglogistic") {
-    if (class(G) != "matrix")
-        G = as.matrix(cbind(1, G))
-    if (class(X) != "matrix")
-        X = as.matrix(X)
+    G = cbind(1, as.matrix(G))
+    X = as.matrix(X)
+
     theta_est = EM.surv(theta_int, lambda = lambda, n = n, G = G, Y = Y, X = X, delta = delta, np = np, K = K, NG = NG, alpha = alpha, dist = dist)$theta
 
     # estimated parameters
