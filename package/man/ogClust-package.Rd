@@ -10,6 +10,13 @@ Outcome-guided clustering of high dimensional omic data(e.g. gene expression) to
         identify the outcome assoicated subgroups toward precision medicine. Outcome could be 
         either continous or survival.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/liupeng2117/OGClust/package}
+}
+
+}
 \author{
 \strong{Maintainer}: Peng Liu \email{pel67@pitt.edu}
 

@@ -125,7 +125,7 @@ Wang, Lili and Zheng, Chao and Zhou, Wen and Zhou, Wen-Xin (2020)
 \url{http://www.math.ucsd.edu/~wez243/tfHuber.pdf}\cr
 
 Chi, Yuejie and Li, Yuanxin and Zhang, Huishuai and Liang, Yingbin (2019)
-\emph{Median-Truncated Gradient Descent: A Robust and Scalable Nonconvex Approach for Signal Estimation}
+\emph{Median-Truncated Gradient Descent: A Robust and Scalable Nonconvex Approach for Signal Estimation,}\cr
 \emph{In Compressed Sensing and Its Applications,pages 237-261. Springer.}
 \url{https://link.springer.com/chapter/10.1007/978-3-319-73074-5_8}
 }

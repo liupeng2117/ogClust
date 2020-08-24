@@ -1,0 +1,89 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.2.13)  11 JUL 2020 16:14
+entering extended mode
+**"D:/research/Disease subtyping/github/ogClust/.Rd2pdf15308/Rd2.tex"
+("D:/research/Disease subtyping/github/ogClust/.Rd2pdf15308/Rd2.tex"
+LaTeX2e <2020-02-02> patch level 1
+L3 programming layer <2020-02-08>
+("C:\Users\liupeng2117\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\book.cl
+s"
+Document Class: book 2019/12/20 v1.4l Standard LaTeX document class
+
+("C:\Users\liupeng2117\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\bk10.cl
+o"
+File: bk10.clo 2019/12/20 v1.4l Standard LaTeX file (size option)
+)
+\c@part=\count167
+\c@chapter=\count168
+\c@section=\count169
+\c@subsection=\count170
+\c@subsubsection=\count171
+\c@paragraph=\count172
+\c@subparagraph=\count173
+\c@figure=\count174
+\c@table=\count175
+\abovecaptionskip=\skip47
+\belowcaptionskip=\skip48
+\bibindent=\dimen134
+) (C:/PROGRA~1/R/R-36~1.1/share/texmf/tex/latex\Rd.sty
+Package: Rd 
+
+("C:\Users\liupeng2117\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\ifthen.
+sty"
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+("C:\Users\liupeng2117\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\longta
+ble.sty"
+Package: longtable 2020/01/07 v4.13 Multi-page Table package (DPC)
+\LTleft=\skip49
+\LTright=\skip50
+\LTpre=\skip51
+\LTpost=\skip52
+\LTchunksize=\count176
+\LTcapwidth=\dimen135
+\LT@head=\box45
+\LT@firsthead=\box46
+\LT@foot=\box47
+\LT@lastfoot=\box48
+\LT@cols=\count177
+\LT@rows=\count178
+\c@LT@tables=\count179
+\c@LT@chunks=\count180
+\LT@p@ftn=\toks14
+)
+("C:\Users\liupeng2117\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\bm.sty
+"
+Package: bm 2019/07/24 v1.2d Bold Symbol Support (DPC/FMi)
+\symboldoperators=\mathgroup4
+\symboldletters=\mathgroup5
+\symboldsymbols=\mathgroup6
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 141.
+LaTeX Info: Redefining \bm on input line 209.
+)
+("C:\Users\liupeng2117\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\alltt.s
+ty"
+Package: alltt 1997/06/16 v2.0g defines alltt environment
+)
+("C:\Users\liupeng2117\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\verbat
+im.sty"
+Package: verbatim 2019/11/10 v1.5r LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks15
+\verbatim@line=\toks16
+\verbatim@in@stream=\read2
+)
+("C:\Users\liupeng2117\AppData\Local\Programs\MiKTeX 2.9\tex/latex/url\url.sty"
+\Urlmuskip=\muskip16
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+("C:\Users\liupeng2117\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\textcom
+p.sty"
+Package: textcomp 2020/02/02 v2.0n Standard LaTeX package
+)
+\ldescriptionwidth=\skip53
+
+
+! LaTeX Error: File `inconsolata.sty' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: sty)
+
+Enter file name: 

@@ -13,7 +13,7 @@ indicator `delta` for censoring.
 data(surv_dt)
 }
 \description{
-An simulated survival data, with expression of 1000
+A simulated survival data, with expression of 1000
 genes, two prognostic covariates, survival time,
 plus an indicator for censoring.
 }
