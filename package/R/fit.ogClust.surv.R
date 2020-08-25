@@ -125,7 +125,8 @@ EM.surv <- function(theta, lambda, n, G, Y, X, delta, np, K, NG, alpha = 0.5, di
         # ==E-STEP==#
         gamma_old_matrix = matrix(gamma_old, ncol = K - 1, byrow = T)
         gamma_old_matrix = cbind(gamma_old_matrix, 0)
-        pai_old = sapply(1:K, function(k) exp(G %*% gamma_old_matrix[, k, drop = F])/rowSums(exp(G %*% gamma_old_matrix)))
+        #pai_old = sapply(1:K, function(k) exp(G %*% gamma_old_matrix[, k, drop = F])/rowSums(exp(G %*% gamma_old_matrix)))
+        pai_old = sapply(1:K, function(k) 1/rowSums(exp(sweep(G %*% gamma_old_matrix, 1, G %*% gamma_old_matrix[, k, drop = F]))))
 
         f_old = sapply(1:K, function(x) f_calc(Y1 = Y, X1 = X, beta = beta_old, mu = miu_old[x], sigma2 = sigma2_old, delta = delta))
         f_old = t(apply(f_old, 1, function(x) x/sum(x)))
@@ -138,13 +139,13 @@ EM.surv <- function(theta, lambda, n, G, Y, X, delta, np, K, NG, alpha = 0.5, di
         w_old = sapply(1:K, function(k) (pai_old[, k] * f_old[, k])/diag(pai_old %*% t(f_old)))
 
         # ==M-STEP==#
-        gamma_new_matrix = tryCatch({
+        #gamma_new_matrix = tryCatch({
             fit <- glmnet::glmnet(x = G[, -1], y = w_old, lambda = lambda, family = "multinomial", alpha = alpha, type.multinomial = "grouped")
             gamma_new_matrix = rbind(t(fit$a0), sapply(1:K, function(x) as.numeric(fit$beta[[x]])))
             gamma_new_matrix = sapply(1:K, function(x) gamma_new_matrix[, x] - gamma_new_matrix[, K])
-        }, error = function(e) {
-            return(gamma_old_matrix)
-        })
+        #}, error = function(e) {
+        #    return(gamma_old_matrix)
+        #})
 
         if (is.null(colnames(X))) {
             colnames(X) = paste0("X", 1:np)
