@@ -162,7 +162,7 @@ EM.surv <- function(theta, lambda, n, G, Y, X, delta, np, K, NG, alpha = 0.5, di
         weights[which(weights == 0)] = 10^-3
 
         fit = survival::survreg(eval(parse(text = paste("Surv(Y,delta)~-1", paste(colnames(X), collapse = " + "), paste(paste0("mu", 1:K), collapse = " + "),
-            sep = " + "))), weights = weights, data = dt2, dist = dist, robust = TRUE)
+            sep = " + "))), weights = weights, data = dt2, dist = dist, robust = FALSE)
         miu_new = fit$coefficients[(np + 1):(np + K)]
         sigma2_new = fit$scale
         beta_new = fit$coefficients[1:np]
