@@ -139,7 +139,10 @@ EM.surv <- function(theta, lambda, n, G, Y, X, delta, np, K, NG, alpha = 0.5, di
 
         # ==M-STEP==#
         #gamma_new_matrix = tryCatch({
+
+        if(any(apply(w_old,2, function(x) sum(abs(x)))<1e-05)){
             w_old[,apply(w_old,2, function(x) sum(abs(x)))<1e-05]<-1e-05/n
+        }
             fit <- glmnet::glmnet(x = G[, -1], y = w_old, lambda = lambda, family = "multinomial", alpha = alpha, type.multinomial = "grouped")
             gamma_new_matrix = rbind(t(fit$a0), sapply(1:K, function(x) as.numeric(fit$beta[[x]])))
             gamma_new_matrix = sapply(1:K, function(x) gamma_new_matrix[, x] - gamma_new_matrix[, K])
