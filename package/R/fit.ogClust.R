@@ -112,13 +112,15 @@ fit.ogClust <- function(n, K, np, NG, lambda, alpha, G, Y, X, theta_int, robust 
 
     gamma_est_matrix = matrix(gamma_est, ncol = K - 1, byrow = T)
     gamma_est_matrix = cbind(gamma_est_matrix, 0)
+    
+    par_est<-list(beta0=beta0_est, beta=beta_est, sigma2=sigma2_est, gamma=gamma_est_matrix)
     G = cbind(1, G)
     pai_est = sapply(1:K, function(k) exp(G %*% gamma_est_matrix[, k, drop = F])/rowSums(exp(G %*% gamma_est_matrix)))
     f_est <- sapply(1:K, function(x) (1/sqrt(2 * pi * sigma2_est)) * exp(-(Y - beta0_est[x] - X %*% beta_est)^2/(2 * sigma2_est)))
     (ll = sum(log(diag(pai_est %*% t(f_est)))))
     # calculate the expected value of Y and R2
-    Y_prd = apply(sapply(1:K, function(x) pai_est[, x] * (beta0_est[x] + X %*% beta_est)), 1, sum)
-    R2 = 1 - sum((Y - Y_prd)^2)/sum((Y - mean(Y))^2)
+    #Y_prd = apply(sapply(1:K, function(x) pai_est[, x] * (beta0_est[x] + X %*% beta_est)), 1, sum)
+    #R2 = 1 - sum((Y - Y_prd)^2)/sum((Y - mean(Y))^2)
 
     # Calculate AIC BIC
     AIC = 2 * sum(theta_est != 0) - 2 * ll
@@ -126,9 +128,9 @@ fit.ogClust <- function(n, K, np, NG, lambda, alpha, G, Y, X, theta_int, robust 
     # EBIC = BIC + 2 * (1 - 1/(2 * log(length(theta_est), base = n))) * log(choose(length(theta_est), sum(theta_est != 0)))
 
     # prosterior prob
-    w_est = sapply(1:K, function(k) (pai_est[, k] * f_est[, k])/diag(pai_est %*% t(f_est)))
-    cl.assign <- apply(w_est, 1, which.max)
-    final.res <- list(theta_est, ll = ll, R2 = R2, AIC = AIC, BIC = BIC, lambda = lambda)
+    #w_est = sapply(1:K, function(k) (pai_est[, k] * f_est[, k])/diag(pai_est %*% t(f_est)))
+    #cl.assign <- apply(w_est, 1, which.max)
+    final.res <- list(par=par_est, ll = ll, R2 = R2, AIC = AIC, BIC = BIC, lambda = lambda)
     attr(final.res, "class") <- "ogClust"
     return(final.res)
 }
