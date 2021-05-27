@@ -19,7 +19,7 @@ Depends:
 Imports:
     glmnet (>= 2.0.18),
     tfHuber (>= 1.0),
-    survival (>= 3.1.12),
+    survival (>= 2.1.12),
     stats
 Suggests: 
     testthat (>= 2.1.0),

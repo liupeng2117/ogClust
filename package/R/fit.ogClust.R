@@ -128,7 +128,7 @@ fit.ogClust <- function(n, K, np, NG, lambda, alpha, G, Y, X, theta_int, robust 
     # prosterior prob
     w_est = sapply(1:K, function(k) (pai_est[, k] * f_est[, k])/diag(pai_est %*% t(f_est)))
     cl.assign <- apply(w_est, 1, which.max)
-    final.res <- list(res = c(theta_est, ll = ll, R2 = R2, AIC = AIC, BIC = BIC, lambda = lambda), prob = pai_est, Y_prd = Y_prd, grp_assign = cl.assign)
+    final.res <- list(theta_est, ll = ll, R2 = R2, AIC = AIC, BIC = BIC, lambda = lambda)
     attr(final.res, "class") <- "ogClust"
     return(final.res)
 }
