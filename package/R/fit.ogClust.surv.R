@@ -29,7 +29,11 @@
 #'
 #' @return An object with class \code{"ogClust"}
 #' \itemize{
-#'  \item{\code{res}}{ a vector of parameter estimates,likelihood \code{"ll"}, \code{"R2"}, \code{"AIC"}, \code{"BIC"} and tuning parameter \code{lambda}}
+#'  \item{\code{par}}{ a list of parameter estimates}
+#'  \item{\code{ll}}{likelihood}
+#'  \item{\code{AIC}}{AIC}
+#'  \item{\code{BIC}}{BIC}
+#'  \item{\code{lambda}}{lambda}
 #'  \item{\code{prob}}{ predicted probability for belonging to each subgroup}
 #'  \item{\code{Y_prd}}{ predicted outcome}
 #'  \item{\code{grp_assign}}{ prediced group assignement}
@@ -94,18 +98,22 @@ fit.ogClust.surv <- function(n, K, np, NG, lambda, alpha, G, Y, X, delta, theta_
     f_est[is.na(f_est)] = 0
 
     (ll = sum(log(diag(pai_est %*% t(f_est)))))
-    # calculate the expected value of Y and R2
-    #Y_prd = apply(sapply(1:K, function(x) pai_est[, x] * (beta0_est[x] + X %*% beta_est)), 1, sum)
-    #R2 = 1 - sum((Y - Y_prd)^2)/sum((Y - mean(Y))^2)
 
     # Calculate AIC BIC
     AIC = 2 * sum(theta_est != 0) - 2 * ll
     BIC = log(n) * sum(theta_est != 0) - 2 * ll
 
     # prosterior prob
-    #w_est = sapply(1:K, function(k) (pai_est[, k] * f_est[, k])/diag(pai_est %*% t(f_est)))
-    #cl.assign <- apply(w_est, 1, which.max)
-    final.res <- list(par=par_est, ll = ll, AIC = AIC, BIC = BIC, lambda = lambda)
+    w_est = sapply(1:K, function(k) (pai_est[, k] * f_est[, k])/diag(pai_est %*% t(f_est)))
+    cl.assign <- apply(w_est, 1, which.max)
+    
+    # calculate the expected value of Y and R2
+    #Y_prd = apply(sapply(1:K, function(x) pai_est[, x] * (beta0_est[x] + X %*% beta_est)), 1, sum) #soft assignment
+    Y_prd = beta0_est[cl.assign] + X %*% beta_est #hard assignment
+    #R2 = 1 - sum((Y - Y_prd)^2)/sum((Y - mean(Y))^2)
+    
+    final.res <- list(par=par_est, ll = ll, AIC = AIC, BIC = BIC, lambda = lambda,
+                      Y_prd=Y_prd, grp_assign=cl.assign)
     attr(final.res, "class") <- "ogClust"
     return(final.res)
 }
